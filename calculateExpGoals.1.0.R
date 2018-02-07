@@ -77,6 +77,7 @@ glm.mod <- glm(Goal ~ degree_angle + goaldist + Header + Penalty_attack + 0
                   , family = binomial(link = logit), data = Proc.Shots)
 
 # Parametric intervals
+summary(glm.mod)
 
 std.interval <- confint(glm.mod)
 
@@ -87,6 +88,22 @@ bootstrap.interval <- sapply(1:nrow(std.interval), GetBootInterval)
 
 #### 4. Viz ####
 
+std.interval.dt <- data.table(Variable = row.names(std.interval), p025 = std.interval[,1], p975 = std.interval[,2])
+std.dt <- data.table(Variable = names(coef(glm.mod)), coef = coef(glm.mod))
+boot.interval.dt <- data.table(Variable = row.names(std.interval), p025 = bootstrap.interval[1, ], 
+                               p975 = bootstrap.interval[2, ])
+
+plot.CI <- ggplot() + 
+    geom_segment(data = std.interval.dt, 
+                        aes(x = Variable, xend = Variable, y = p025, yend = p975), size = 4) +
+    geom_segment(data = boot.interval.dt, 
+                 aes(x = Variable, xend = Variable, y = p025, yend = p975), size = 1.5, col = 'grey50') +    
+    geom_point(data = std.dt,
+               aes(x = Variable, y = coef), size = 2, col = 'lightblue') + 
+    coord_flip() + 
+    xlab('Oszacowanie') +
+    theme_minimal() +
+    theme(axis.title.y = element_blank())
 
 #### 4. Data Export ####
 
