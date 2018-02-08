@@ -107,3 +107,4 @@ plot.CI <- ggplot() +
 
 #### 4. Data Export ####
 
+ggsave('./img/ConfIntervalsXG.png', plot = plot.CI)
